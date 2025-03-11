@@ -12,13 +12,19 @@ import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setLoading(false);
     });
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>;
+  }
 
   return (
     <Router>
@@ -29,7 +35,7 @@ function App() {
         <Route path="/recipe/:id" element={user ? <Recipe /> : <Navigate to="/auth" />} />
         <Route path="/add-recipe" element={user ? <AddEditRecipe /> : <Navigate to="/auth" />} />
         <Route path="/edit-recipe/:id" element={user ? <AddEditRecipe /> : <Navigate to="/auth" />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth" element={user ? <Navigate to="/" /> : <Auth />} />
       </Routes>
     </Router>
   );

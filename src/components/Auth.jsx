@@ -8,44 +8,96 @@ function Auth() {
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
+
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
-        navigate('/');
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
-        navigate('/');
       }
+      navigate('/');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
-      <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#fff' }}>
+      <h2 style={{ color: '#1e88e5', textAlign: 'center' }}>{isLogin ? 'Login' : 'Sign Up'}</h2>
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
       <form onSubmit={handleAuth}>
         <div style={{ marginBottom: '15px' }}>
-          <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ width: '100%', padding: '8px', marginTop: '5px' }} />
+          <label style={{ display: 'block', marginBottom: '5px', color: '#1e88e5' }}>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid #ccc',
+              borderRadius: '5px',
+              backgroundColor: loading ? '#f5f5f5' : '#fff'
+            }}
+          />
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: '100%', padding: '8px', marginTop: '5px' }} />
+          <label style={{ display: 'block', marginBottom: '5px', color: '#1e88e5' }}>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '1px solid #ccc',
+              borderRadius: '5px',
+              backgroundColor: loading ? '#f5f5f5' : '#fff'
+            }}
+          />
         </div>
-        <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#1e88e5', color: 'white', border: 'none', borderRadius: '5px' }}>
-          {isLogin ? 'Login' : 'Sign Up'}
+        {isLogin && (
+          <p style={{ textAlign: 'right', marginBottom: '15px' }}>
+            <a href="#" style={{ color: '#1e88e5', textDecoration: 'none' }}>
+              Forgot Password?
+            </a>
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '10px',
+            backgroundColor: loading ? '#90caf9' : '#1e88e5',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {loading ? 'Processing...' : isLogin ? 'Login' : 'Sign Up'}
         </button>
       </form>
-      <p style={{ marginTop: '10px' }}>
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
-        <span onClick={() => setIsLogin(!isLogin)} style={{ color: '#1e88e5', cursor: 'pointer', textDecoration: 'underline' }}>
+      <p style={{ textAlign: 'center', marginTop: '15px' }}>
+        {isLogin ? "Don't have an account? " : 'Already have an account? '}
+        <span
+          onClick={() => setIsLogin(!isLogin)}
+          style={{ color: '#1e88e5', cursor: 'pointer', textDecoration: 'underline' }}
+        >
           {isLogin ? 'Sign Up' : 'Login'}
         </span>
       </p>
